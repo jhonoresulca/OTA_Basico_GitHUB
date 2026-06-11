@@ -5,7 +5,7 @@
 
 #define VERSION_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/version.txt"
 #define FIRMWARE_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/firmware.bin"
-#define CURRENT_VERSION "1.4"
+#define CURRENT_VERSION "1.5"
 
 unsigned long lastCheck = 0;
 
@@ -16,23 +16,26 @@ void checkAndUpdate() {
     http.begin(VERSION_URL);
     int code = http.GET();
     
+    Serial.print("[DEBUG] HTTP code: ");
+    Serial.println(code);
+    
     if (code == 200) {
         String newVersion = http.getString();
         newVersion.trim();
         Serial.print("GitHub versión: ");
         Serial.println(newVersion);
         
-if (newVersion != CURRENT_VERSION) {
-    Serial.println("✓ Descargando firmware...");
-    http.end();
-    delay(500);
-    
-    Serial.println("[DEBUG] Iniciando descarga...");
-    http.begin(FIRMWARE_URL);
-    int httpCode = http.GET();
-    
-    Serial.print("[DEBUG] HTTP code descarga: ");
-    Serial.println(httpCode);
+        if (newVersion != CURRENT_VERSION) {
+            Serial.println("✓ Descargando firmware...");
+            http.end();
+            delay(500);
+            
+            Serial.println("[DEBUG] Iniciando descarga...");
+            http.begin(FIRMWARE_URL);
+            int httpCode = http.GET();
+            
+            Serial.print("[DEBUG] HTTP code descarga: ");
+            Serial.println(httpCode);
             
             if (httpCode == 200) {
                 int len = http.getSize();
@@ -64,6 +67,9 @@ if (newVersion != CURRENT_VERSION) {
         } else {
             Serial.println("✓ Versión actual");
         }
+    } else {
+        Serial.print("✗ Fallo conexión: ");
+        Serial.println(code);
     }
     http.end();
 }
@@ -91,11 +97,11 @@ void loop() {
     // LED
     digitalWrite(2, HIGH);
     Serial.println("LED ON");
-    delay(100);
+    delay(1000);
     
     digitalWrite(2, LOW);
     Serial.println("LED OFF");
-    delay(100);
+    delay(1000);
     
     // Consultar cada 30 segundos
     if (millis() - lastCheck > 10000) {
