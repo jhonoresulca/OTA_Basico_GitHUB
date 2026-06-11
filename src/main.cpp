@@ -5,7 +5,7 @@
 
 #define VERSION_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/version.txt"
 #define FIRMWARE_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/firmware.bin"
-#define CURRENT_VERSION "1.6"
+#define CURRENT_VERSION "1.7"
 
 unsigned long lastCheck = 0;
 
@@ -101,7 +101,7 @@ void loop() {
     
     digitalWrite(2, LOW);
     Serial.println("LED OFF");
-    delay(2000);
+    delay(50);
     
     // Consultar cada 30 segundos
     if (millis() - lastCheck > 10000) {
