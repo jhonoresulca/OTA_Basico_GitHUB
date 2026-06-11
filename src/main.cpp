@@ -5,7 +5,7 @@
 
 #define VERSION_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/version.txt.txt"
 #define FIRMWARE_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/firmware.bin"
-#define CURRENT_VERSION "1.1"
+#define CURRENT_VERSION "1.2"
 
 unsigned long lastCheck = 0;
 
