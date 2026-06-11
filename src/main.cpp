@@ -5,7 +5,7 @@
 
 #define VERSION_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/version.txt.txt"
 #define FIRMWARE_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/firmware.bin"
-#define CURRENT_VERSION "1.2"
+#define CURRENT_VERSION "1.3"
 
 unsigned long lastCheck = 0;
 
@@ -16,9 +16,6 @@ void checkAndUpdate() {
     http.begin(VERSION_URL);
     int code = http.GET();
     
-    Serial.print("[GitHub] HTTP code: ");
-    Serial.println(code);  // ← VER QUÉ DEVUELVE
-    
     if (code == 200) {
         String newVersion = http.getString();
         newVersion.trim();
@@ -26,12 +23,44 @@ void checkAndUpdate() {
         Serial.println(newVersion);
         
         if (newVersion != CURRENT_VERSION) {
-            Serial.println("✓ NUEVA VERSIÓN");
+            Serial.println("✓ Descargando firmware...");
+            http.end();
+            delay(500);
+            
+            http.begin(FIRMWARE_URL);
+            int httpCode = http.GET();
+            
+            if (httpCode == 200) {
+                int len = http.getSize();
+                Serial.print("Tamaño: ");
+                Serial.println(len);
+                
+                if (Update.begin(len)) {
+                    WiFiClient* stream = http.getStreamPtr();
+                    size_t written = Update.writeStream(*stream);
+                    
+                    Serial.print("Bytes escritos: ");
+                    Serial.println(written);
+                    
+                    if (Update.end()) {
+                        Serial.println("✓ ¡Actualizado!");
+                        delay(1000);
+                        ESP.restart();
+                    } else {
+                        Serial.print("✗ Update error: ");
+                        Serial.println(Update.getError());
+                    }
+                } else {
+                    Serial.println("✗ No se pudo iniciar Update");
+                }
+            } else {
+                Serial.print("✗ HTTP error: ");
+                Serial.println(httpCode);
+            }
+        } else {
+            Serial.println("✓ Versión actual");
         }
-    } else {
-        Serial.println("[GitHub] Error al conectar");
     }
-    
     http.end();
 }
 
@@ -58,14 +87,14 @@ void loop() {
     // LED
     digitalWrite(2, HIGH);
     Serial.println("LED ON");
-    delay(100);
+    delay(2000);
     
     digitalWrite(2, LOW);
     Serial.println("LED OFF");
-    delay(100);
+    delay(500);
     
     // Consultar cada 30 segundos
-    if (millis() - lastCheck > 30000) {
+    if (millis() - lastCheck > 10000) {
         lastCheck = millis();
         checkAndUpdate();
     }
