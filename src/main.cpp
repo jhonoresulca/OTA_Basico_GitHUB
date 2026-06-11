@@ -3,9 +3,9 @@
 #include <HTTPClient.h>
 #include <Update.h>
 
-#define VERSION_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/version.txt.txt"
+#define VERSION_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/version.txt"
 #define FIRMWARE_URL "https://raw.githubusercontent.com/jhonoresulca/OTA_Basico_GitHUB/master/ota/firmware.bin"
-#define CURRENT_VERSION "1.3"
+#define CURRENT_VERSION "1.4"
 
 unsigned long lastCheck = 0;
 
@@ -22,13 +22,17 @@ void checkAndUpdate() {
         Serial.print("GitHub versión: ");
         Serial.println(newVersion);
         
-        if (newVersion != CURRENT_VERSION) {
-            Serial.println("✓ Descargando firmware...");
-            http.end();
-            delay(500);
-            
-            http.begin(FIRMWARE_URL);
-            int httpCode = http.GET();
+if (newVersion != CURRENT_VERSION) {
+    Serial.println("✓ Descargando firmware...");
+    http.end();
+    delay(500);
+    
+    Serial.println("[DEBUG] Iniciando descarga...");
+    http.begin(FIRMWARE_URL);
+    int httpCode = http.GET();
+    
+    Serial.print("[DEBUG] HTTP code descarga: ");
+    Serial.println(httpCode);
             
             if (httpCode == 200) {
                 int len = http.getSize();
@@ -87,11 +91,11 @@ void loop() {
     // LED
     digitalWrite(2, HIGH);
     Serial.println("LED ON");
-    delay(2000);
+    delay(100);
     
     digitalWrite(2, LOW);
     Serial.println("LED OFF");
-    delay(500);
+    delay(100);
     
     // Consultar cada 30 segundos
     if (millis() - lastCheck > 10000) {
