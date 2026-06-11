@@ -101,7 +101,7 @@ void loop() {
     
     digitalWrite(2, LOW);
     Serial.println("LED OFF");
-    delay(1000);
+    delay(2000);
     
     // Consultar cada 30 segundos
     if (millis() - lastCheck > 10000) {
